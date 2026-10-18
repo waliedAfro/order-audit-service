@@ -1,10 +1,38 @@
-outbox:
-  scheduler:
-    delay: 5000
+spring:
+  application:
+    name: order-audit-service  
+
+  kafka:
+    bootstrap-servers: localhost:9099
+
+    producer:
+      acks: all
+      retries: 2147483647
+      enable-idempotence: true
+      compression-type: zstd
+      linger-ms: 20
+      batch-size: 65536
+      max-in-flight-requests-per-connection: 5
+      delivery-timeout-ms: 120000
+      request-timeout-ms: 30000
+      #transaction-id-prefix: attendance-
+
+    consumer:
+      group-id: audit-service
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      isolation-level: read_committed
+      max-poll-records: 100
 
 
 kafka:
-  server : localhost:9092
-
   topics:
-    order-created : 
+    order-created: order.created
+    payment-completed: payment.completed
+    payment-failed: payment.failed
+
+
+outbox:
+  scheduler:
+    delay: 5000
+    
